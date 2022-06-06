@@ -3,14 +3,20 @@ from functools import partial
 import os
 from openpyxl import load_workbook
 import numpy as np
-from tkinter import Button, Label, Tk, filedialog
-
+from tkinter import Button, Label, Tk, filedialog, Entry
 
 root = Tk()
 root.title('Factura Auditoria')
 root.geometry('450x450+300+200')
 
-def abrir():    
+asignacion: int
+label1 = Label(root, font=("Arial", 15))
+label2 = Label(root, font=("Arial", 14))
+boton1 = Button(root, fg='green', font=("Arial", 25))
+boton2 = Button(root, font=("Arial", 25))
+boton3 = Button(root, font=("Arial", 25))
+
+def abrir():
     archivo = filedialog.askopenfilename(title="abrir", filetypes=(('Libro Excel (*.xlsx)','*.xlsx'),))
     wb = load_workbook(archivo)
 
@@ -28,7 +34,7 @@ def abrir():
     venta = 0
 
     for llave in range(min(llaves),max(llaves)+1):
-        while indice_datos <=(len(llaves)-1) and llaves[indice_datos] == llave: 
+        while indice_datos <=(len(llaves)-1) and llaves[indice_datos] == llave:
             venta = venta + ventas[indice_datos]
             indice_datos = indice_datos + 1
 
@@ -56,63 +62,57 @@ def abrir():
 
     ws_factura.append([None, total_factura])
 
-    BotonAbrirExcel.destroy()
-    labelIndicaciones.destroy()
-    global LabelFactura
-    LabelFactura= Label(root,text=f'Total factura: {total_factura} pesos',font=("Arial", 15))
-    LabelFactura.pack()
-    global BotonGuardarExcel
-    BotonGuardarExcel = Button(root,text='Guardar Excel', command=partial(guardar,wb), fg='green',font=("Arial", 25))  
-    BotonGuardarExcel.pack()
-    
+    label2['text'] = f'Total factura: {total_factura} pesos'
+    label2['fg'] = 'black'
+    boton1['text'] = 'Guardar Excel'
+    boton1['command'] = partial(guardar,wb) 
+
 
 def guardar(wb):
     archivo = filedialog.asksaveasfilename(title="guardar", filetypes=(('Libro Excel (*.xlsx)','*.xlsx'),))
-    wb.save(archivo+'.xlsx') 
-    BotonGuardarExcel.destroy()   
-    botonNuevaFactura.pack() 
-    botonSalir.pack()
+    wb.save(archivo+'.xlsx')
+    boton1['text'] = 'Calcular otra factura'
+    boton1['command'] = nuevaFactura
+    boton2['text'] = 'Salir'
+    boton2['command'] = close
+    boton2['fg'] = 'blue'
+    boton2.pack()
+
 
 def go(valorAsignado: int):
-    BotonAsignacion21500.destroy()
-    BotonAsignacion55000.destroy()
-    myLabel.destroy()
-    global LabelValorAsignado
-    LabelValorAsignado = Label(root,text=f"Asignacion: {valorAsignado}",font=("Arial", 17))
-    LabelValorAsignado.pack()
+    boton2.pack_forget()
+    label1['text'] = f"Asignacion: {valorAsignado}"
     global asignacion
     asignacion = valorAsignado
-    labelIndicaciones.pack()
-    BotonAbrirExcel.pack() 
+    label2['text'] = "En la 2da hoja del excel deben estar los registros\n de las ventas en la forma LLAVE/VALOR."
+    label2['fg'] = 'goldenrod'
+    boton1['text'] = 'Abrir Excel'
+    boton1['command'] = abrir
+
 
 def close():
-   root.quit()   
+   root.quit()
+
+
+def otroValor():
+    pass
 
 def nuevaFactura():
-    botonSalir.destroy()
-    LabelValorAsignado.destroy()
-    botonNuevaFactura.destroy()
-    LabelFactura.destroy()
-    calcularFactura()
+    label1['text']= "Seleccione el valor de la asignacion:"
+    label1.pack()
+    label2['text'] = ''
+    label2.pack()
+    boton1['text'] = '21500'
+    boton1['command'] = partial(go,21500)
+    boton1.pack()
+    boton2['text'] = '55000'
+    boton2['fg'] = 'green'
+    boton2['command'] = partial(go,55000)
+    boton2.pack()
+    boton3['text'] = 'Otro Valor'
+    boton3['fg'] = 'green'
+    boton3['command'] = otroValor
+    boton3.pack()
 
-def calcularFactura():
-    global myLabel
-    myLabel = Label(root,text="Seleccione el valor de la asignacion:",font=("Arial", 15))
-    global labelIndicaciones
-    labelIndicaciones =  Label(root,text="En la 2da hoja del excel deben estar los registros\n de las ventas en la forma LLAVE/VALOR.",fg='goldenrod',font=("Arial", 14))
-    global BotonAsignacion21500
-    BotonAsignacion21500 = Button(root,text='21500', command=partial(go,21500), fg='green',font=("Arial", 25))  
-    global BotonAsignacion55000
-    BotonAsignacion55000 = Button(root,text='55000', command=partial(go,55000), fg='green',font=("Arial", 25))   
-    global BotonAbrirExcel 
-    BotonAbrirExcel = Button(root,text='Abrir Excel', command=abrir, fg='green',font=("Arial", 25))  
-    global botonSalir 
-    botonSalir =  Button(root,text='Salir', command=close, fg='blue',font=("Arial", 25))
-    global botonNuevaFactura
-    botonNuevaFactura = Button(root,text='Calcular otra factura', command=nuevaFactura, fg='green',font=("Arial", 25))  
-    myLabel.pack()
-    BotonAsignacion21500.pack()
-    BotonAsignacion55000.pack()
-
-calcularFactura()
+nuevaFactura()
 root.mainloop()
