@@ -1,9 +1,7 @@
-from cProfile import label
 from functools import partial
-import os
 from openpyxl import load_workbook
 import numpy as np
-from tkinter import Button, Label, Tk, filedialog, Entry
+from tkinter import LEFT, RIGHT, Button, Label, Tk, filedialog, Entry
 
 root = Tk()
 root.title('Factura Auditoria')
@@ -15,6 +13,7 @@ label2 = Label(root, font=("Arial", 14))
 boton1 = Button(root, fg='green', font=("Arial", 25))
 boton2 = Button(root, font=("Arial", 25))
 boton3 = Button(root, font=("Arial", 25))
+entry1 = Entry(root, font=("Arial", 25))
 
 def abrir():
     archivo = filedialog.askopenfilename(title="abrir", filetypes=(('Libro Excel (*.xlsx)','*.xlsx'),))
@@ -80,15 +79,18 @@ def guardar(wb):
 
 
 def go(valorAsignado: int):
+    boton1.pack_forget()
     boton2.pack_forget()
     boton3.pack_forget()
+    entry1.pack_forget()
     label1['text'] = f"Asignacion: {valorAsignado}"
     global asignacion
     asignacion = valorAsignado
-    label2['text'] = "En la 2da hoja del excel deben estar los registros\n de las ventas en la forma LLAVE/VALOR."
+    label2['text'] = "En la 2da hoja del excel deben estar los registros\n de las ventas en la forma | LLAVE | VALOR |."
     label2['fg'] = 'goldenrod'
     boton1['text'] = 'Abrir Excel'
     boton1['command'] = abrir
+    boton1.pack()
 
 
 def close():
@@ -96,7 +98,18 @@ def close():
 
 
 def otroValor():
-    pass
+    boton1.pack_forget()
+    boton2.pack_forget()
+    boton3.pack_forget()
+    boton1['text'] = 'OK'
+    boton1['command'] = obtenerElOtroValor
+    entry1.pack(side=LEFT)
+    boton1.pack(side=RIGHT)
+
+
+def obtenerElOtroValor():
+    go(int(entry1.get()))
+
 
 def nuevaFactura():
     label1['text']= "Seleccione el valor de la asignacion:"
