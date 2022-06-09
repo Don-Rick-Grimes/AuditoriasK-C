@@ -81,6 +81,7 @@ def guardar(wb):
 
 def go(valorAsignado: int):
     boton2.pack_forget()
+    boton3.pack_forget()
     label1['text'] = f"Asignacion: {valorAsignado}"
     global asignacion
     asignacion = valorAsignado
