@@ -17,7 +17,7 @@ entry1 = Entry(root, font=("Arial", 25))
 
 
 try:
-    imagenIntrucciones = PhotoImage(file = 'InstruccionesPrograma.PNG')
+    imagenIntrucciones = PhotoImage(file = 'InstruccionesPrograma.png')
     canvas = Canvas(root, width = 600, height = 300)      
     canvas.pack()   
     canvas.create_image(0,0, anchor= 'nw' ,image=imagenIntrucciones) 
