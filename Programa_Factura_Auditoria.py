@@ -28,53 +28,54 @@ except:
 def abrir():
     try:
         archivo = filedialog.askopenfilename(title="abrir", filetypes=(('Libro Excel (*.xlsx)','*.xlsx'),))
-        wb = load_workbook(archivo)
+        if archivo != '':                
+            wb = load_workbook(archivo)
 
-        ws_datos = wb[wb.sheetnames[1]]
+            ws_datos = wb[wb.sheetnames[1]]
 
-        cell_range = ws_datos['A':'B']
-        factura = [[],[]]
-        llaves = []
-        ventas = []
-        for l,v in zip(cell_range[0][:], cell_range[1][:]):
-            llaves.append(l.value)
-            ventas.append(v.value)
+            cell_range = ws_datos['A':'B']
+            factura = [[],[]]
+            llaves = []
+            ventas = []
+            for l,v in zip(cell_range[0][:], cell_range[1][:]):
+                llaves.append(l.value)
+                ventas.append(v.value)
 
-        indice_datos = 0
-        venta = 0
+            indice_datos = 0
+            venta = 0
 
-        for llave in range(min(llaves),max(llaves)+1):
-            while indice_datos <=(len(llaves)-1) and llaves[indice_datos] == llave:
-                venta = venta + ventas[indice_datos]
-                indice_datos = indice_datos + 1
+            for llave in range(min(llaves),max(llaves)+1):
+                while indice_datos <=(len(llaves)-1) and llaves[indice_datos] == llave:
+                    venta = venta + ventas[indice_datos]
+                    indice_datos = indice_datos + 1
 
-            if llaves[indice_datos-1] == llave:
-                factura[0].append(llave)
-                factura[1].append(venta)
-                venta = 0
+                if llaves[indice_datos-1] == llave:
+                    factura[0].append(llave)
+                    factura[1].append(venta)
+                    venta = 0
 
-        for i in range(0,len(factura[1])):
-            if factura[1][i] > asignacion:
-                factura[1][i] = asignacion
+            for i in range(0,len(factura[1])):
+                if factura[1][i] > asignacion:
+                    factura[1][i] = asignacion
 
-        total_factura =sum(factura[1])
+            total_factura =sum(factura[1])
 
-        a = np.array(factura)
-        a = a.transpose()
-        factura = a.tolist()
+            a = np.array(factura)
+            a = a.transpose()
+            factura = a.tolist()
 
-        wb.create_sheet('FACTURA')
-        ws_factura = wb['FACTURA']
+            wb.create_sheet('FACTURA')
+            ws_factura = wb['FACTURA']
 
-        ws_factura.append(['#LLAVE', 'CONSUMO'])
-        for r in factura:
-            ws_factura.append(r)
+            ws_factura.append(['#LLAVE', 'CONSUMO'])
+            for r in factura:
+                ws_factura.append(r)
 
-        ws_factura.append([None, total_factura])
-        label2['text'] = f'Total factura: {total_factura} pesos'
-        label2['fg'] = 'black'
-        boton1['text'] = 'Guardar Excel'
-        boton1['command'] = partial(guardar,wb)
+            ws_factura.append([None, total_factura])
+            label2['text'] = f'Total factura: {total_factura} pesos'
+            label2['fg'] = 'black'
+            boton1['text'] = 'Guardar Excel'
+            boton1['command'] = partial(guardar,wb)
 
     except:    
         messagebox.showerror(title="Error", message='Verifique el formato del excel.')
